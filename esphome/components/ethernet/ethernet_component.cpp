@@ -42,17 +42,18 @@ void EthernetComponent::setup() {
 
   // Init MAC and PHY configs to default
   eth_mac_config_t mac_config = ETH_MAC_DEFAULT_CONFIG();
+  eth_esp32_emac_config_t emac_config = ETH_ESP32_EMAC_DEFAULT_CONFIG();
   eth_phy_config_t phy_config = ETH_PHY_DEFAULT_CONFIG();
 
   phy_config.phy_addr = this->phy_addr_;
   phy_config.reset_gpio_num = this->power_pin_;
 
-  mac_config.smi_mdc_gpio_num = this->mdc_pin_;
-  mac_config.smi_mdio_gpio_num = this->mdio_pin_;
-  mac_config.clock_config.rmii.clock_mode = this->clk_mode_;
-  mac_config.clock_config.rmii.clock_gpio = this->clk_gpio_;
+  emac_config.smi_mdc_gpio_num = this->mdc_pin_;
+  emac_config.smi_mdio_gpio_num = this->mdio_pin_;
+  emac_config.clock_config.rmii.clock_mode = this->clk_mode_;
+  emac_config.clock_config.rmii.clock_gpio = this->clk_gpio_;
 
-  esp_eth_mac_t *mac = esp_eth_mac_new_esp32(&mac_config);
+  esp_eth_mac_t *mac = esp_eth_mac_new_esp32(&emac_config, &mac_config);
 
   switch (this->type_) {
     case ETHERNET_TYPE_LAN8720: {
@@ -76,7 +77,7 @@ void EthernetComponent::setup() {
 //      break;
 //    }
     case ETHERNET_TYPE_KSZ8081: {
-      this->phy_ = esp_eth_phy_new_ksz8081(&phy_config);
+      this->phy_ = esp_eth_phy_new_ksz80xx(&phy_config);
       break;
     }
     default: {
